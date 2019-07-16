@@ -1,0 +1,512 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Bongard Reasoning Puzzles</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="jspsych-6.0.5/jspsych.js"></script>
+    <script src="jspsych-6.0.5/plugins/jspsych-survey-text.js"></script>
+    <script src="jspsych-6.0.5/plugins/jspsych-survey-multi-choice.js"></script>
+    <script src="jspsych-6.0.5/plugins/jspsych-image-keyboard-response.js"></script>
+    <script src="jspsych-6.0.5/plugins/jspsych-instructions.js"></script>
+    <script src="jspsych-6.0.5/plugins/jspsych-html-keyboard-response.js"></script>
+    <script src="jspsych-6.0.5/plugins/jspsych-fullscreen.js"></script>
+
+    <link href="jspsych-6.0.5/css/jspsych.css" rel="stylesheet" type="text/css"></link>
+  </head>
+  <body></body>
+
+  <script>
+
+  var timeline = [];
+  var timeline2 = [];
+  var count = 0;
+
+  //preloads images
+  var images = ['img/example1.png', 'img/example2.png', 'img/example3.png'];
+  for(var i=0; i<5; i++){
+    for(var p=0; p<6; p++){
+      //preloads each rule individually
+      images.push('img/test_' + i + '_angularity_' + p + '.png'),
+      images.push('img/test_' + i + '_collinearity_' + p + '.png'),
+      images.push('img/test_' + i + '_concavity_' + p + '.png'),
+      images.push('img/test_' + i + '_sameness_' + p + '.png'),
+      images.push('img/test_' + i + '_levels_' + p + '.png')
+    }
+  };
+  
+  var counter = function(n){
+    var i = n + timeline.length;
+    count = i;
+    return i;
+    };
+
+  var shuffle = function(a) {
+    var j, x, i;
+    for (i = a.length; i; i--) {
+        j = Math.floor(Math.random() * i);
+        x = a[i - 1];
+        a[i - 1] = a[j];
+        a[j] = x;
+    }
+    }
+
+    var shuffleArray = function (array) {
+	     var currentIndex = array.length;
+	     var temporaryValue, randomIndex;
+	     // While there remain elements to shuffle...
+	     while (0 !== currentIndex) {
+		     // Pick a remaining element...
+		     randomIndex = Math.floor(Math.random() * currentIndex);
+		     currentIndex -= 1;
+
+		     // And swap it with the current element.
+		     temporaryValue = array[currentIndex];
+		     array[currentIndex] = array[randomIndex];
+		     array[randomIndex] = temporaryValue;
+	     }
+	      return array;
+    };
+
+var makeid = function(){
+      var text = "";
+      var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+      for( var i=0; i < 5; i++ )
+          text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+      return text;
+  };
+
+  var mTurkId = makeid() + 'iTi' + makeid();
+
+console.log(mTurkId);
+  var participantID = jsPsych.data.getURLVariable('workerId'); 
+  var turkInfo = jsPsych.turk.turkInfo();
+
+  jsPsych.data.addProperties({
+  subject: participantID,
+  workerId: turkInfo.workerId,
+  mTurkId: mTurkId,
+  assginementId: turkInfo.assignmentId,
+  hitId: turkInfo.assignmentId
+  });
+
+  var continue_space = "<small><em>(press SPACE to continue, or BACKSPACE to head back)</em></small>";
+
+ var enter_fullscreen = {
+   type: 'fullscreen',
+   fullscreen_mode: true,
+   message: "<p>This experiment will be run in fullscreen. Press <strong>Continue</strong> to start the experiment, and press <strong>Esc</strong> on your keyboard at any time to exit fullscreen.</p>"
+   }
+
+timeline.push(enter_fullscreen);
+
+
+
+
+
+
+
+
+
+
+  var instructions = {
+    type: "instructions",
+    key_forward: ' ',
+    key_backward: 8,
+    pages: ["<p>In this experiment, you will see a series of puzzles of varying difficulty. " +
+    "Each puzzle consists of two sets of six figures, six on the left and six on the right, like the following:</p>" +
+    "<div class='bongard-image'><img src= " + images[0] + " height='416' width='558'></img></div>" +
+    "<p>Each figure on the <strong>left</strong> has something in common, something not shared with any figure on the right. " +
+    "Similarly, each figure on the <strong>right</strong> has something in common, something not shared with any figure on the left. " +
+    "Your job is to figure out the rule that makes the pictures on the left different from the pictures on the right.</p>" +
+    continue_space,
+    "<p>You might think that the answer is that the left-side has a yellow figure and the right-side does not, " +
+    "but this is <strong>wrong</strong> since it should apply to <strong>every</strong> figure on the left-side " +
+    "in a way that distinguishes it from <strong>every</strong> figure on the right-side, and only one left-side figure is yellow.</p>" +
+    "<p><em>Yellow is not a trait of the left-side figures in general.</em></p>" +
+    "<div class='bongard-image'><img src='img/example1.png' height='416' width='558'></img></div>" +
+    continue_space,
+    "<p>You might think that an appropriate description for the right-side is that they're all dotted lines. " +
+    "However, since one of the left-side figures also has dotted lines, this is <strong>wrong</strong>." +
+    "<p><em>Dotted lines are not a trait of the right-side figures in general.</em></p>" +
+    "<div class='bongard-image'><img src='img/example1.png' height='416' width='558'></img></div>" +
+    continue_space,
+    "<p>The correct description for the left-side is that <strong>they are all triangles</strong> since every left-side figure is a triangle, and no right-side figure is.</p>" +
+    "<p>If you said '3 sides' that would also be acceptable.</p>" +
+    "<div class='bongard-image'><img src='img/example1.png' height='416' width='558'></img></div>" +
+    continue_space,
+    
+    "<p>The correct answer for the right-side is that <strong>they are all quadrilaterals.</strong></p>" +
+    "<p>If you said '4 sides' that would also be acceptable.</p>" +
+    "<div class='bongard-image'><img src='img/example1.png' height='416' width='558'></img></div>" +
+    continue_space,
+    "<p>Take a moment to look over these descriptions, so you're sure how they apply to the puzzle:</p>" +
+    "<p><strong>Rule describing the LEFT-side figures: <em>Triangles</em></strong></p>" +
+    "<p><strong>Rule describing the RIGHT-side figures: <em>Quadrilaterals</em></strong></p>" +
+    "<div class='bongard-image'><img src='img/example1.png' height='416' width='558'></img></div>" +
+    continue_space,
+    "<p>We'll show you a couple of example puzzles. Each time look carefully at the puzzle and work out how to describe each side.</p>" +
+    "<p>When you think you've got the answer for this one (i.e. a description of both the left- and the right-sides), just press SPACE.</p>" +
+    "<p> </p>" +
+    "<div class='bongard-image'><img src= " + images[1] + " height='416' width='558'></img></div>"  +
+    continue_space,
+
+
+
+
+    ]
+  };
+
+
+  var exampleTest = {
+    type: 'survey-text',
+    questions: [{prompt:"<div class='block-center center-content'><img src='img/example2.png' height='416' width='558'></img></div>Give a rule describing the LEFT-side figures."}, {prompt:"Give a rule describing the RIGHT-side figures."}],
+
+  }
+  
+  var loop_et = {
+        timeline: [exampleTest],
+        loop_function: function(data){
+        var data = JSON.stringify(jsPsych.data.get().last(1).values()[0]);
+            if(data.includes('"Q0\\":\\"\\"')){
+            console.log("true");
+                return true;
+              } else {
+                if(data.includes('"Q1\\":\\"\\"')){
+                console.log("true");
+                return true;
+                } else {
+                return false;
+                }
+            }
+            }
+      };
+
+  var instructions2 = {
+    type: "instructions",
+    key_forward: ' ',
+    key_backward: 8,
+    pages: ["<p><strong>The answer is that the left-side figures have circles; the right-side figures have no circles.</strong></p>" +
+    "<p>You might initially think that the left-side figures have two shapes, or the right-side figures have triangles, but these rules are not universally true when you look closer.</p>" +
+    "<p>Within these puzzles, you might encounter <em>fluff</em>, or irrelevant shapes and configurations that are not universal rules seperating the left and right-sides. In this example, the number of shapes and the presence of triangles are irrelevant to the rule seperating left and right-sides. You can always use the process of elimination to rule out irrelevant fluff.</p>" +
+    "<p>When you've understood this, continue to the next example.</p>" +
+    "<p> </p>" +
+    "<div class='bongard-image'><img src='img/example2.png' height='416' width='558'></img></div>"  +
+    continue_space,
+    "<p>Here's a slightly more difficult one. Look carefully at the puzzle and try work out how to describe each side.</p>" +
+    "<p>When you think you've got the answer (i.e. a description of both the left- and the right-sides), just press SPACE.</p>" +
+    "<p> </p>" +
+    "<div class='bongard-image'><img src= " + images[2] + " height='416' width='558'></img></div>"  +
+    continue_space,]
+
+  }
+
+  var exampleTest2 = {
+    type: 'survey-text',
+    questions: [{prompt:"<div class='block-center center-content'><img src='img/example3.png' height='416' width='558'></img></div>Give a rule describing the LEFT-side figures."}, {prompt:"Give a rule describing the RIGHT-side figures."}],
+    on_finish: function(trial_data){
+           saveData(participantID + ".csv", jsPsych.data.get().csv())
+           }
+    
+
+  }
+  
+   var loop_et2 = {
+        timeline: [exampleTest2],
+        loop_function: function(data){
+        var data = JSON.stringify(jsPsych.data.get().last(1).values()[0]);
+            if(data.includes('"Q0\\":\\"\\"')){
+            console.log("true");
+                return true;
+              } else {
+                if(data.includes('"Q1\\":\\"\\"')){
+                console.log("true");
+                return true;
+                } else {
+                return false;
+                }
+            }
+            }
+      };
+
+  var instructionsFinal = {
+    type: "instructions",
+    key_forward: ' ',
+    key_backward: 8,
+    pages: ["<p>The answer is that the left-side lines cross themselves; the right-side lines do not.</p>" +
+    "<p>When you've understood why that's correct, press SPACE to for some final instructions.</p>" +
+    "<p> </p>" +
+    "<div class='bongard-image'><img src='img/example3.png' height='416' width='558'></img></div>"  +
+    continue_space,
+    "<p>Ok, let's begin the experiment. You'll be shown 25 different puzzles, and when you think you have the answer (a description for both the left- and right-sides), press <strong>SPACE</strong>.</p>" +
+    "<p>You'll have up to two minutes to find your answer.</p>" +
+    "<p>You will then be asked to type in the LEFT-side rule and the RIGHT-side rule, just like you did with the examples.</p>" +
+    "<p>Then we will give you 6 new figures (like the 6 individual figures that make up each side) and you will have to choose if they belong with the left- or the right-side. " +
+    "You will press the <strong>F</strong> key if the figure belongs on the left side, and the <strong>J</strong> key if the figure belongs on the right side. " +
+    "Even if you haven't found the answer at this point, you can make a guess. Try to answer these as quickly as possible.</p>" +
+    "<p>Rest assured there are no trick questions. There is always a difference, even if you think the two sides look similar. The trick is to find it!</p>"+
+    
+    "<p class='small'><strong>(press SPACE to begin the experiment, or BACKSPACE to head back)</strong></p></div>"]
+  }
+
+  timeline.push(instructions);
+  
+  timeline.push(loop_et);
+  timeline.push(instructions2);
+  timeline.push(loop_et2);
+  timeline.push(instructionsFinal);
+
+  var blocks = ['angularity','collinearity','concavity','sameness','levels'];
+  var questionNos = Array.apply(null, Array(5)).map(function (_, i) {return i;});
+  blocks.forEach(function(blockName){
+    shuffle(questionNos);
+    questionNos.forEach(function(questionNo,questionOrder){
+      var explanation = {
+        type: 'survey-text',
+        questions: [{prompt:"<div class='block-center center-content'><img src='img/" + questionNo + "_" + blockName + ".png' height='416' width='558'></img></div>Give a rule describing the LEFT-side figures."}, {prompt:"Give a rule describing the RIGHT-side figures."}],
+        //columns: [60,60],
+        //var trial = jsPsych.currentTrial(),
+        data: {
+          questionNo: questionNo,
+          questionOrder: questionOrder,
+          version: blockName,
+          task: 'explain'
+        },
+         on_finish: function(trial_data){
+           jsPsych.data.addProperties({
+             questionNo: questionNo,
+             questionOrder: questionOrder,
+             version: blockName,
+             task: 'explain'
+           })}
+      };
+      
+      var gotit = {
+        
+        type: 'html-keyboard-response',
+        //<p><strong>Puzzle #" + q + "</p><strong> 
+        stimulus: "<div class='bongard-image'><img src='img/" + questionNo + "_" + blockName + ".png' height='416' width='558'></img></div>",
+        choices: [' '],
+        prompt: "<div class='block-center center-content'>Hit SPACE when you have the answer.</div>",
+        trial_duration: 120000,
+        response_ends_trial: true,
+        
+        data: {
+          questionNo: questionNo,
+          questionOrder: questionOrder,
+          version: blockName,
+          task: 'gotit'
+        },
+         on_finish: function(trial_data){
+         //console.log(jsPsych.data.getLastTrialData().select('trial_index').values[0].toString()),
+           saveData(participantID + ".csv", jsPsych.data.get().csv()), //overwrites with new data every trial
+           jsPsych.data.addProperties({
+
+             questionNo: questionNo,
+             questionOrder: questionOrder,
+             version: blockName,
+             task: 'gotit'
+           })
+
+         }
+
+      };
+
+      var loop_node = {
+        timeline: [explanation],
+        loop_function: function(data){
+        var data = JSON.stringify(jsPsych.data.get().last(1).values()[0]);
+            if(data.includes('"Q0\\":\\"\\"')){
+                return true;
+              } else {
+                if(data.includes('"Q1\\":\\"\\"')){
+                return true;
+                } else {
+                return false;
+                }
+            }
+            }
+      };
+
+
+      var testTimeLine = function () {
+
+        var testprompt1 = "Does the following figure belong on the left or the right? Press <strong>'F'</strong> for left; <strong>'J'</strong> for right.<br><div class='small'></div><br><div class='test-image center-content'><img src='img/test_";
+        var testprompt2 = ".png' height='163' width='163'></img></div>";
+        var testArray = [];
+        var testNos = Array.apply(null, Array(6)).map(function (_, i) {return i;});
+        shuffle(testNos);
+        testNos.forEach(function(testNo,testOrder){
+          testArray.push({
+            prompt: testprompt1 + questionNo + "_" + blockName + "_" + testNo + testprompt2,
+            stimulus: "<div class='block-center center-content'><img src='img/" + questionNo + "_" + blockName + ".png'  height='416' width='558'></img></div>",
+            //stimulus: "img/test_3_switch_3.png",
+            data: {
+              stimulus: questionNo + "_" + blockName,
+              questionNo: questionNo,
+              questionOrder: questionOrder,
+              version: blockName,
+              testNo: testNo,
+              testOrder: testOrder,
+              task: 'test'
+            },
+            on_finish: function(trial_data){
+              var correct = 0;
+              if(trial_data.key_press == 70 && testNo <= 1){ //f = 70, j = 74
+                correct = 1;
+              } else if(trial_data.key_press == 74 && testNo >= 2){
+                correct = 1;
+              };
+              jsPsych.data.addDataToLastTrial({
+                correct: correct
+              });
+            }
+          })
+        });
+      return testArray;
+    }
+
+      var test = {
+        type: 'html-keyboard-response',
+        choices: ['f','j'],
+        timeline: testTimeLine()
+      };
+
+      var trial = {
+        timeline: [gotit, loop_node, test]
+      };
+//      switch (blockName){
+//        case 'angularity': timeline_angularity.push(trial);
+//        case 'concavity': timeline_concavity.push(trial);
+//        case 'collinearity': timeline_collinearity.push(trial);
+//        case 'sameness': timeline_sameness.push(trial);
+//        case 'levels': timeline_levels.push(trial);
+  //    };
+      timeline2.push(trial);
+      //console.log("setup done")
+
+      })
+  })
+
+  qangularity = timeline2.slice(0, 5);
+  var angularityShuffled = jsPsych.randomization.repeat(qangularity, 1);
+
+  qconcavity = timeline2.slice(5, 10);
+  var concavityShuffled = jsPsych.randomization.repeat(qconcavity, 1);
+
+  qcollinearity = timeline2.slice(10, 15);
+  var collinearityShuffled = jsPsych.randomization.repeat(qcollinearity, 1);
+
+  qsameness = timeline2.slice(15, 20);
+  var samenessShuffled = jsPsych.randomization.repeat(qsameness, 1);
+
+  qlevels = timeline2.slice(20, 25);
+  var levelsShuffled = jsPsych.randomization.repeat(qlevels, 1);
+
+  var subtimeline = [];
+  subtimeline.push(angularityShuffled, concavityShuffled, collinearityShuffled, samenessShuffled, levelsShuffled);
+  var timelineShuffled = shuffleArray(subtimeline);
+
+  subtimeline[0].forEach(function(trial){
+    timeline.push(trial)
+  })
+subtimeline[1].forEach(function(trial){
+    timeline.push(trial)
+  })
+subtimeline[2].forEach(function(trial){
+    timeline.push(trial)
+  })
+subtimeline[3].forEach(function(trial){
+    timeline.push(trial)
+  })
+subtimeline[4].forEach(function(trial){
+    timeline.push(trial)
+  })
+
+var dem1options = ["Extremely difficult", "Somewhat difficult", "Neither difficult nor easy", "Somewhat easy", "Extremely easy"];
+var dem3options = ["Female", "Male", "Other", "Prefer not to say"];
+var dem4options = ["Yes", "No"];
+var dem7options = ["Less than high school", "High school diploma", "Some college, no degree", "Associate's degree", "Bachelor's degree", "Master's degree", "PhD, law, or medical degree", "Prefer not to say"];
+  var demographics1 = {
+    type: 'survey-multi-choice',
+    questions: [{prompt: "How difficult were these puzzles for you?", options: dem1options, required:true,}]
+  };
+  var demographics2 = {
+    type: 'survey-text',
+    questions: [{prompt:"Please briefly describe the strategy you used for figuring out the rules for each puzzle:*"}]
+    };
+  var demographics3 = {
+    type: 'survey-multi-choice',
+    questions: [{prompt: "What is your gender?", options: dem3options, required:true,}]
+  };
+  var demographics4 = {
+    type: 'survey-multi-choice',
+    questions: [{prompt: "Are you a native English speaker?*", options: dem4options, required:true,}]
+  };
+  var demographics5 = {
+    type: 'survey-text',
+    questions: [{prompt:"What other languages do you speak?*"}]
+    };
+  var demographics6 = {
+    type: 'survey-text',
+    questions: [{prompt:"How old are you?"}]
+    };
+  var demographics7 = {
+    type: 'survey-multi-choice',
+    questions: [{prompt: "What is the highest degree or level of school you have completed?  If currently enrolled, highest degree received.", options: dem7options, required:true,}]
+  };
+  var demographics8 = {
+    type: 'survey-text',
+    questions: [{prompt:"If you have any comments for us, please write them here:"}],
+    //saveData(participantID + ".csv", jsPsych.data.get().csv())
+    };
+    
+    timeline.push(demographics1, demographics2, demographics3, demographics4, demographics5, demographics6, demographics7, demographics8);
+
+var exit_fullscreen = {
+   type: 'fullscreen',
+   fullscreen_mode: false,
+   };
+   
+   timeline.push(exit_fullscreen);
+
+  var endmessage = {
+    type: 'html-keyboard-response',
+    stimulus: function() {
+      saveData(participantID + ".csv", jsPsych.data.get().csv());
+    return "Thank you for participating!  Your completion code is " +
+    mTurkId +
+    ". Copy and paste this in MTurk to get paid. If you have any questions or comments, please email lupyanlab@gmail.com.";
+    }
+  };
+  
+  timeline.push(endmessage);
+
+  function saveData(filename, filedata){
+    console.log('Trial data saved')
+   $.ajax({
+      type:'post',
+      cache: false,
+      url: 'bongarddata.php', // this is the path to the above PHP script
+      data: {
+        filename: filename,
+        filedata: filedata}
+   });
+}
+
+  jsPsych.init({
+    default_iti: 0,
+    timeline: timeline,
+    show_progress_bar: true,
+//    exclusions: {
+//    min_width: 1024,
+//    min_height: 720
+//  },
+    preload_images: images,
+    on_finish: function(data) {
+      jsPsych.endExperiment();
+    }
+  });
+  </script>
+</html>
